@@ -14,9 +14,9 @@ public class DaoTest {
         //deleteCurrency();
 
         CurrencyDao currencyDao = CurrencyDao.getInstance();
-        Optional<Currency> currency = currencyDao.findById(2L);
+        Optional<Currency> currency = currencyDao.getByCode("EUR");
         System.out.println(currency);
-        List<Currency> currencyList = currencyDao.findAll();
+        List<Currency> currencyList = currencyDao.getAll();
         System.out.println(currencyList);
 
 
@@ -34,8 +34,8 @@ public class DaoTest {
         System.out.println(currency);
     }
 
-    private static void deleteCurrency(){
-        CurrencyDao currencyDao = CurrencyDao.getInstance();
-        System.out.println(currencyDao.delete(12L));
-    }
+//    private static void deleteCurrency(){
+//        CurrencyDao currencyDao = CurrencyDao.getInstance();
+//        System.out.println(currencyDao.delete(12L));
+//    }
 }

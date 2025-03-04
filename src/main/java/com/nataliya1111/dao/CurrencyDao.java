@@ -8,7 +8,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalDouble;
 
 public class CurrencyDao {
 
@@ -19,7 +18,7 @@ public class CurrencyDao {
             VALUES (?, ?, ?);            
             """;
 
-    private static final String FIND_ALL_SQL = """
+    private static final String GET_ALL_SQL = """
             SELECT id, 
                 code, 
                 full_name, 
@@ -27,8 +26,8 @@ public class CurrencyDao {
             FROM Currencies
             """;
 
-    private static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
-            WHERE id = ?
+    private static final String GET_BY_CODE_SQL = GET_ALL_SQL + """
+            WHERE code = ?
             """;
 
     private static final String DELETE_SQL = """
@@ -58,10 +57,10 @@ public class CurrencyDao {
         }
     }
 
-    public Optional<Currency> findById(Long id){
+    public Optional<Currency> getByCode(String code){
         try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
-            preparedStatement.setLong(1, id);
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_CODE_SQL)) {
+            preparedStatement.setString(1, code);
             ResultSet resultSet = preparedStatement.executeQuery();
             Currency currency = null;
             if (resultSet.next()){
@@ -74,9 +73,9 @@ public class CurrencyDao {
         }
     }
 
-    public List<Currency> findAll(){
+    public List<Currency> getAll(){
         try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_SQL)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Currency> listOfCurrencies = new ArrayList<>();
             while (resultSet.next()){
@@ -89,15 +88,15 @@ public class CurrencyDao {
         }
     }
 
-    public boolean delete(Long id){
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
-            preparedStatement.setLong(1, id);
-            return preparedStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoException("");
-        }
-    }
+//    public boolean delete(Long id){
+//        try (Connection connection = ConnectionManager.get();
+//             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
+//            preparedStatement.setLong(1, id);
+//            return preparedStatement.executeUpdate() > 0;
+//        } catch (SQLException e) {
+//            throw new DaoException("");
+//        }
+//    }
 
     public static CurrencyDao getInstance(){
         return INSTANCE;
