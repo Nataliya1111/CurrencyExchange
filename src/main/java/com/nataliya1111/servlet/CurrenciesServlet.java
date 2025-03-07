@@ -23,8 +23,8 @@ public class CurrenciesServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        List<Currency> currencies = currencyDao.getAll();
-        objectMapper.writeValue(resp.getWriter(), currencies);
+        List<Currency> currenciesList = currencyDao.getAll();
+        objectMapper.writeValue(resp.getWriter(), currenciesList);
 
     }
 

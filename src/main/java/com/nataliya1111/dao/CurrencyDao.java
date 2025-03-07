@@ -30,12 +30,20 @@ public class CurrencyDao {
             WHERE code = ?
             """;
 
+    private static final String GET_BY_ID_SQL = GET_ALL_SQL + """
+            WHERE id = ?
+            """;
+
     private static final String DELETE_SQL = """
             DELETE FROM Currencies
             WHERE id = ?
             """;
 
     private CurrencyDao() {
+    }
+
+    public static CurrencyDao getInstance(){
+        return INSTANCE;
     }
 
     public Currency add(Currency currency){
@@ -73,21 +81,37 @@ public class CurrencyDao {
         }
     }
 
-    public List<Currency> getAll(){
+    public Optional<Currency> getById(Long id){
         try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_SQL)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_ID_SQL)) {
+            preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            List<Currency> listOfCurrencies = new ArrayList<>();
-            while (resultSet.next()){
-                Currency currency = buildCurrency(resultSet);
-                listOfCurrencies.add(currency);
+            Currency currency = null;
+            if (resultSet.next()){
+                currency = buildCurrency(resultSet);
             }
-            return listOfCurrencies;
+            return Optional.ofNullable(currency);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public List<Currency> getAll(){
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_SQL)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Currency> currenciesList = new ArrayList<>();
+            while (resultSet.next()){
+                Currency currency = buildCurrency(resultSet);
+                currenciesList.add(currency);
+            }
+            return currenciesList;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 //    public boolean delete(Long id){
 //        try (Connection connection = ConnectionManager.get();
 //             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
@@ -96,11 +120,8 @@ public class CurrencyDao {
 //        } catch (SQLException e) {
 //            throw new DaoException("");
 //        }
-//    }
 
-    public static CurrencyDao getInstance(){
-        return INSTANCE;
-    }
+//    }
 
     private static Currency buildCurrency(ResultSet resultSet) throws SQLException {
         return new Currency(resultSet.getLong("id"),

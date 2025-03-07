@@ -1,7 +1,9 @@
 package com.nataliya1111;
 
 import com.nataliya1111.dao.CurrencyDao;
+import com.nataliya1111.dao.ExchangeRatesDao;
 import com.nataliya1111.entity.Currency;
+import com.nataliya1111.entity.ExchangeRate;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,9 @@ public class DaoTest {
         System.out.println(currency);
         List<Currency> currencyList = currencyDao.getAll();
         System.out.println(currencyList);
+
+        List<ExchangeRate> exchangeRateList = ExchangeRatesDao.getInstance().getAll();
+        System.out.println(exchangeRateList);
 
 
     }
