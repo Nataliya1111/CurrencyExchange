@@ -4,14 +4,14 @@ import com.nataliya1111.entity.Currency;
 
 import java.math.BigDecimal;
 
-public class ExchangeRatesDto {
+public class ExchangeRateDto {
 
     private Long id;
     private Currency baseCurrency;
     private Currency targetCurrency;
     private BigDecimal rate;
 
-    public ExchangeRatesDto(Long id, Currency baseCurrency, Currency targetCurrency, BigDecimal rate) {
+    public ExchangeRateDto(Long id, Currency baseCurrency, Currency targetCurrency, BigDecimal rate) {
         this.id = id;
         this.baseCurrency = baseCurrency;
         this.targetCurrency = targetCurrency;

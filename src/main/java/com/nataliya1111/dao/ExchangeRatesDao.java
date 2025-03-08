@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ExchangeRatesDao {
 
@@ -20,6 +21,10 @@ public class ExchangeRatesDao {
                target_currency_id,
                rate
             FROM ExchangeRates       
+            """;
+
+    private static final String GET_BY_BASE_AND_TARGET_ID = GET_ALL_SQL + """
+            WHERE base_currency_id = ? AND target_currency_id = ?
             """;
 
     private ExchangeRatesDao(){
@@ -39,6 +44,24 @@ public class ExchangeRatesDao {
                 exchangeRatesList.add(exchangeRate);
             }
             return exchangeRatesList;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<ExchangeRate> getByBaseAndTargetId(Long baseCurrencyId, Long targetCurrencyId){
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_BASE_AND_TARGET_ID)) {
+            preparedStatement.setLong(1, baseCurrencyId);
+            preparedStatement.setLong(2, targetCurrencyId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ExchangeRate exchangeRate = null;
+
+            if(resultSet.next()){
+                exchangeRate = buildExchangeRate(resultSet);
+            }
+            return Optional.ofNullable(exchangeRate);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

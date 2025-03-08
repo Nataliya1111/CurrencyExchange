@@ -1,9 +1,7 @@
 package com.nataliya1111.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nataliya1111.dao.ExchangeRatesDao;
-import com.nataliya1111.dto.ExchangeRatesDto;
-import com.nataliya1111.entity.ExchangeRate;
+import com.nataliya1111.dto.ExchangeRateDto;
 import com.nataliya1111.service.ExchangeRatesService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,7 +23,7 @@ public class ExchangeRatesServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        List<ExchangeRatesDto> exchangeRatesList = exchangeRatesService.getAll();
+        List<ExchangeRateDto> exchangeRatesList = exchangeRatesService.getAll();
         objectMapper.writeValue(resp.getWriter(), exchangeRatesList);
 
 
