@@ -10,7 +10,6 @@ import com.nataliya1111.exception.NoSuchExchangeRateException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ExchangeRatesService {
 

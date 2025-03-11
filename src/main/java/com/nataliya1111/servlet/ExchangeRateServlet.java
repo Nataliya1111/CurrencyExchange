@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Map;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
@@ -22,14 +23,13 @@ public class ExchangeRateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
 
         String codesPair = req.getPathInfo().replaceFirst("/", "");
 
         if (!RequestValidator.isCodesPairValid(codesPair)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);    //400
-            resp.getWriter().write("Invalid request. There must be two codes of 3 uppercase letters in a row");
+            //!!!!!!!!!!!!!!!!!resp.getWriter().write(objectMapper.writeValueAsString("Invalid request. There must be two codes of 3 uppercase letters in a row"));
+            objectMapper.writeValue(resp.getWriter(), Map.of("message", "Invalid request. There must be two codes of 3 uppercase letters in a row"));
             return;
         }
 
