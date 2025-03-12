@@ -24,6 +24,9 @@ public class DaoTest {
         List<ExchangeRate> exchangeRateList = ExchangeRatesDao.getInstance().getAll();
         System.out.println(exchangeRateList);
 
+        String qwe = "";
+        System.out.println(qwe.isBlank());
+
 
     }
 

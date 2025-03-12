@@ -6,16 +6,20 @@ public class RequestValidator {
     }
 
     public static boolean isCurrencyCodeValid(String code){
-        if(code.matches("[A-Z]{3}")){
-            return true;
-        }
-        return false;
+        return code.matches("[A-Z]{3}");
+    }
+
+    public static boolean isCurrencyNameValid(String name){
+        return name.matches("[a-zA-Z ]+") && name.length() <= 30;
+    }
+
+    public static boolean isCurrencySignValid(String sign){
+        return sign.length() <= 3;
     }
 
     public static boolean isCodesPairValid(String codesPair){
-        if(codesPair.matches("[A-Z]{6}")){
-            return true;
-        }
-        return false;
+        return codesPair.matches("[A-Z]{6}");
     }
+
+
 }

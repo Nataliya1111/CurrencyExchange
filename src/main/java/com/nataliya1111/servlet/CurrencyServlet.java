@@ -27,7 +27,7 @@ public class CurrencyServlet extends HttpServlet {
 
         if (!RequestValidator.isCurrencyCodeValid(currencyCode)){
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);    //400
-            resp.getWriter().write("Code of currency is invalid or missed. Code must contain 3 uppercase letters");
+            resp.getWriter().write("Code of currency is invalid or missed. Code must contain 3 uppercase latin letters");
             return;
         }
 
