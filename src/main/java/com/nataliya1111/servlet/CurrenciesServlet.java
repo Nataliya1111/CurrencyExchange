@@ -3,6 +3,8 @@ package com.nataliya1111.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nataliya1111.dao.CurrencyDao;
 import com.nataliya1111.entity.Currency;
+import com.nataliya1111.exception.DataExistsException;
+import com.nataliya1111.exception.InvalidRequestException;
 import com.nataliya1111.util.RequestValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -34,21 +36,15 @@ public class CurrenciesServlet extends HttpServlet {
         String sign = req.getParameter("sign");
 
         if (code.isBlank() || code == null || name.isBlank() || name == null || sign.isBlank() || sign == null){
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);   //400
-            resp.getWriter().write("Missing required currency data");
-            return;
+            throw new InvalidRequestException("Missing required currency data");
         }
 
         if (!RequestValidator.isCurrencyCodeValid(code) || !RequestValidator.isCurrencyNameValid(name) || !RequestValidator.isCurrencySignValid(sign)){
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);   //400
-            resp.getWriter().write("Invalid currency data. Name: up to 30 Latin letters. Code: 3 uppercase Latin letters. Sign: up to 3 characters");
-            return;
+            throw new InvalidRequestException("Invalid currency data. Name: up to 30 Latin letters. Code: 3 uppercase Latin letters. Sign: up to 3 characters");
         }
 
         if (currencyDao.getByCode(code).isPresent()){
-            resp.setStatus(HttpServletResponse.SC_CONFLICT);   //409
-            resp.getWriter().write("Currency with such code already exists");
-            return;
+            throw new DataExistsException("Currency with such code already exists");
         }
 
         Currency newCurrency = new Currency();
@@ -59,6 +55,5 @@ public class CurrenciesServlet extends HttpServlet {
         Currency addedCurrency = currencyDao.add(newCurrency);
 
         objectMapper.writeValue(resp.getWriter(), addedCurrency);
-
     }
 }

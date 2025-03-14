@@ -1,6 +1,7 @@
 package com.nataliya1111.dao;
 
 import com.nataliya1111.entity.ExchangeRate;
+import com.nataliya1111.exception.DatabaseException;
 import com.nataliya1111.util.ConnectionManager;
 
 import java.sql.Connection;
@@ -45,7 +46,7 @@ public class ExchangeRatesDao {
             }
             return exchangeRatesList;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Database error: Unable to read exchange rates");
         }
     }
 
@@ -63,7 +64,7 @@ public class ExchangeRatesDao {
             }
             return Optional.ofNullable(exchangeRate);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Database error: Unable to read exchange rate");
         }
     }
 

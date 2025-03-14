@@ -5,8 +5,8 @@ import com.nataliya1111.dao.ExchangeRatesDao;
 import com.nataliya1111.dto.ExchangeRateDto;
 import com.nataliya1111.entity.Currency;
 import com.nataliya1111.entity.ExchangeRate;
-import com.nataliya1111.exception.NoSuchCurrencyException;
-import com.nataliya1111.exception.NoSuchExchangeRateException;
+import com.nataliya1111.exception.DataNotFoundException;
+import com.nataliya1111.exception.InvalidRequestException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,18 +38,18 @@ public class ExchangeRatesService {
         return exchangeRateDtoList;
     }
 
-    public ExchangeRateDto getByCodes(String codesPair) throws NoSuchCurrencyException, NoSuchExchangeRateException{
+    public ExchangeRateDto getByCodes(String codesPair) throws InvalidRequestException, DataNotFoundException{
         String baseCurrencyCode = codesPair.substring(0, 3);
         String targetCurrencyCode = codesPair.substring(3);
 
         CurrencyDao currencyDao = CurrencyDao.getInstance();
         Currency baseCurrency = currencyDao.getByCode(baseCurrencyCode)
-                .orElseThrow(() -> new NoSuchCurrencyException("Invalid request: Currency is not found"));
+                .orElseThrow(() -> new InvalidRequestException("Invalid request: Currency is not found"));   //400
         Currency targetCurrency = currencyDao.getByCode(targetCurrencyCode)
-                .orElseThrow(() -> new NoSuchCurrencyException("Invalid request: Currency is not found"));
+                .orElseThrow(() -> new InvalidRequestException("Invalid request: Currency is not found"));   //400
 
         ExchangeRate exchangeRate = exchangeRatesDao.getByBaseAndTargetId(baseCurrency.getId(), targetCurrency.getId())
-                .orElseThrow(() -> new NoSuchExchangeRateException("Exchange rate is not found"));
+                .orElseThrow(() -> new DataNotFoundException("Exchange rate is not found"));   //404
 
         return new ExchangeRateDto(
                 exchangeRate.getId(),

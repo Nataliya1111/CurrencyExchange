@@ -2,8 +2,7 @@ package com.nataliya1111.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nataliya1111.dto.ExchangeRateDto;
-import com.nataliya1111.exception.NoSuchCurrencyException;
-import com.nataliya1111.exception.NoSuchExchangeRateException;
+import com.nataliya1111.exception.InvalidRequestException;
 import com.nataliya1111.service.ExchangeRatesService;
 import com.nataliya1111.util.RequestValidator;
 import jakarta.servlet.ServletException;
@@ -13,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Map;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
@@ -26,25 +24,14 @@ public class ExchangeRateServlet extends HttpServlet {
 
         String codesPair = req.getPathInfo().replaceFirst("/", "");
 
-        if (!RequestValidator.isCodesPairValid(codesPair)) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);    //400
-            //!!!!!!!!!!!!!!!!!resp.getWriter().write(objectMapper.writeValueAsString("Invalid request. There must be two codes of 3 uppercase letters in a row"));
-            objectMapper.writeValue(resp.getWriter(), Map.of("message", "Invalid request. There must be two codes of 3 uppercase letters in a row"));
-            return;
+        if (!RequestValidator.isCodesPairValid(codesPair)) {   //400
+            throw new InvalidRequestException("Invalid request. Expected two codes of 3 uppercase letters (example USDRUB)");
+        }
+        if (RequestValidator.isCodesInPairEquals(codesPair)){   //400
+            throw new InvalidRequestException("Codes can't be equal");
         }
 
-        ExchangeRateDto exchangeRateDto;
-        try {
-            exchangeRateDto = exchangeRatesService.getByCodes(codesPair);
-        } catch (NoSuchCurrencyException e) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);    //400
-            resp.getWriter().write("Invalid request. One or two currencies are not found");
-            return;
-        } catch (NoSuchExchangeRateException e) {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);    //404
-            resp.getWriter().write("Exchange rate is not found");
-            return;
-        }
+        ExchangeRateDto exchangeRateDto = exchangeRatesService.getByCodes(codesPair);
 
         objectMapper.writeValue(resp.getWriter(), exchangeRateDto);
     }

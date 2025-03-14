@@ -1,7 +1,7 @@
 package com.nataliya1111.dao;
 
 import com.nataliya1111.entity.Currency;
-import com.nataliya1111.exception.DaoException;
+import com.nataliya1111.exception.DatabaseException;
 import com.nataliya1111.util.ConnectionManager;
 
 import java.sql.*;
@@ -61,7 +61,7 @@ public class CurrencyDao {
             }
             return currency;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Database error: Unable to add currency");
         }
     }
 
@@ -77,7 +77,7 @@ public class CurrencyDao {
             return Optional.ofNullable(currency);
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Database error: Unable to read currency");
         }
     }
 
@@ -93,7 +93,7 @@ public class CurrencyDao {
             return Optional.ofNullable(currency);
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Database error: Unable to read currency");
         }
     }
 
@@ -108,7 +108,7 @@ public class CurrencyDao {
             }
             return currenciesList;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException("Database error: Unable to read currencies");
         }
 
     }
@@ -130,7 +130,5 @@ public class CurrencyDao {
                 resultSet.getString("sign")
         );
     }
-
-
 
 }

@@ -3,6 +3,8 @@ package com.nataliya1111.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nataliya1111.dao.CurrencyDao;
 import com.nataliya1111.entity.Currency;
+import com.nataliya1111.exception.DataNotFoundException;
+import com.nataliya1111.exception.InvalidRequestException;
 import com.nataliya1111.util.RequestValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,9 +28,7 @@ public class CurrencyServlet extends HttpServlet {
         String currencyCode = req.getPathInfo().replaceFirst("/", "");
 
         if (!RequestValidator.isCurrencyCodeValid(currencyCode)){
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);    //400
-            resp.getWriter().write("Code of currency is invalid or missed. Code must contain 3 uppercase latin letters");
-            return;
+            throw new InvalidRequestException("Code of currency is invalid or missed. Code must contain 3 uppercase Latin letters");
         }
 
         Optional<Currency> currency = currencyDao.getByCode(currencyCode);
@@ -37,9 +37,7 @@ public class CurrencyServlet extends HttpServlet {
         try {
             searchedCurrency = currency.get();
         } catch (NoSuchElementException e) {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);    //404
-            resp.getWriter().write("Currency is not found");
-            return;
+            throw new DataNotFoundException("Currency with such code is not found");
         }
 
         objectMapper.writeValue(resp.getWriter(), searchedCurrency);

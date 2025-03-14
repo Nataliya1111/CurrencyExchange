@@ -21,5 +21,11 @@ public class RequestValidator {
         return codesPair.matches("[A-Z]{6}");
     }
 
+    public static boolean isCodesInPairEquals(String codesPair){
+        String baseCurrencyCode = codesPair.substring(0, 3);
+        String targetCurrencyCode = codesPair.substring(3);
+        return baseCurrencyCode.equals(targetCurrencyCode);
+    }
+
 
 }
