@@ -5,6 +5,7 @@ import com.nataliya1111.dao.ExchangeRatesDao;
 import com.nataliya1111.entity.Currency;
 import com.nataliya1111.entity.ExchangeRate;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,9 @@ public class DaoTest {
 
         String qwe = "";
         System.out.println(qwe.isBlank());
+
+        BigDecimal bigDecimal = new BigDecimal("0006000.00000");
+        System.out.println(bigDecimal);
 
 
     }

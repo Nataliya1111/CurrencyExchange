@@ -2,14 +2,18 @@ package com.nataliya1111.service;
 
 import com.nataliya1111.dao.CurrencyDao;
 import com.nataliya1111.dao.ExchangeRatesDao;
-import com.nataliya1111.dto.ExchangeRateDto;
+import com.nataliya1111.dto.ExchangeRateRequestDto;
+import com.nataliya1111.dto.ExchangeRateResponseDto;
 import com.nataliya1111.entity.Currency;
 import com.nataliya1111.entity.ExchangeRate;
+import com.nataliya1111.exception.DataExistsException;
 import com.nataliya1111.exception.DataNotFoundException;
 import com.nataliya1111.exception.InvalidRequestException;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ExchangeRatesService {
 
@@ -21,28 +25,58 @@ public class ExchangeRatesService {
     private ExchangeRatesService(){
     }
 
-    public List<ExchangeRateDto> getAll(){
+    public ExchangeRateResponseDto add(ExchangeRateRequestDto exchangeRateRequestDto){
+        Currency baseCurrency = currencyDao.getByCode(exchangeRateRequestDto.getBaseCurrencyCode()).
+                orElseThrow(() -> new InvalidRequestException("Invalid request: Currency is not found"));   //400
+        Currency targetCurrency = currencyDao.getByCode(exchangeRateRequestDto.getTargetCurrencyCode()).
+                orElseThrow(() -> new InvalidRequestException("Invalid request: Currency is not found"));   //400
+
+        if (baseCurrency.getCode().equals(targetCurrency.getCode())){
+            throw new InvalidRequestException("Invalid request: Currency codes have to be different");
+        }
+
+        ExchangeRate newExchangeRate = new ExchangeRate();
+
+        newExchangeRate.setBaseCurrencyId(baseCurrency.getId());
+        newExchangeRate.setTargetCurrencyId(targetCurrency.getId());
+        newExchangeRate.setRate(new BigDecimal(exchangeRateRequestDto.getRate()));
+
+        Optional<ExchangeRate> optionalExchangeRate = exchangeRatesDao.getByBaseAndTargetId(baseCurrency.getId(), targetCurrency.getId());
+        if (optionalExchangeRate.isPresent()){
+            throw new DataExistsException("Exchange rate with such currencies already exists");   //409
+        };
+
+        ExchangeRate addedExchangeRate = exchangeRatesDao.add(newExchangeRate);
+
+        return new ExchangeRateResponseDto(
+                addedExchangeRate.getId(),
+                (currencyDao.getById(addedExchangeRate.getBaseCurrencyId())).get(),
+                (currencyDao.getById(addedExchangeRate.getTargetCurrencyId())).get(),
+                addedExchangeRate.getRate()
+        );
+    }
+
+    public List<ExchangeRateResponseDto> getAll(){
 
         List<ExchangeRate> exchangeRateList = exchangeRatesDao.getAll();
-        List<ExchangeRateDto> exchangeRateDtoList = new ArrayList<>();
+        List<ExchangeRateResponseDto> exchangeRateResponseDtoList = new ArrayList<>();
 
         for (ExchangeRate exchangeRate : exchangeRateList){
-            ExchangeRateDto exchangeRatesDto = new ExchangeRateDto(
+            ExchangeRateResponseDto exchangeRatesDto = new ExchangeRateResponseDto(
                     exchangeRate.getId(),
                     (currencyDao.getById(exchangeRate.getBaseCurrencyId())).get(),
                     (currencyDao.getById(exchangeRate.getTargetCurrencyId())).get(),
                     exchangeRate.getRate()
             );
-            exchangeRateDtoList.add(exchangeRatesDto);
+            exchangeRateResponseDtoList.add(exchangeRatesDto);
         }
-        return exchangeRateDtoList;
+        return exchangeRateResponseDtoList;
     }
 
-    public ExchangeRateDto getByCodes(String codesPair) throws InvalidRequestException, DataNotFoundException{
+    public ExchangeRateResponseDto getByCodes(String codesPair) throws InvalidRequestException, DataNotFoundException{
         String baseCurrencyCode = codesPair.substring(0, 3);
         String targetCurrencyCode = codesPair.substring(3);
 
-        CurrencyDao currencyDao = CurrencyDao.getInstance();
         Currency baseCurrency = currencyDao.getByCode(baseCurrencyCode)
                 .orElseThrow(() -> new InvalidRequestException("Invalid request: Currency is not found"));   //400
         Currency targetCurrency = currencyDao.getByCode(targetCurrencyCode)
@@ -51,13 +85,24 @@ public class ExchangeRatesService {
         ExchangeRate exchangeRate = exchangeRatesDao.getByBaseAndTargetId(baseCurrency.getId(), targetCurrency.getId())
                 .orElseThrow(() -> new DataNotFoundException("Exchange rate is not found"));   //404
 
-        return new ExchangeRateDto(
+        return new ExchangeRateResponseDto(
                 exchangeRate.getId(),
                 baseCurrency,
                 targetCurrency,
                 exchangeRate.getRate()
         );
     }
+
+//    public boolean isExchangeRateExist(String baseCurrencyCode, String targetCurrencyCode) throws DataNotFoundException{
+//        Currency baseCurrency = currencyDao.getByCode(baseCurrencyCode)
+//                .orElseThrow(() -> new DataNotFoundException("One or two currencies do not exist in database"));   //404
+//        Currency targetCurrency = currencyDao.getByCode(targetCurrencyCode)
+//                .orElseThrow(() -> new DataNotFoundException("One or two currencies do not exist in database"));   //404
+//
+//        Optional<ExchangeRate> optionalExchangeRate = exchangeRatesDao.getByBaseAndTargetId(baseCurrency.getId(), targetCurrency.getId());
+//
+//        return optionalExchangeRate.isPresent();
+//    }
 
     public static ExchangeRatesService getInstance(){
         return INSTANCE;

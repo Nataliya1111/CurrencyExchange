@@ -16,6 +16,11 @@ public class ExchangeRatesDao {
 
     private static final ExchangeRatesDao INSTANCE = new ExchangeRatesDao();
 
+    private static final String ADD_SQL = """
+            INSERT INTO ExchangeRates(base_currency_id, target_currency_id, rate)
+            VALUES (?, ?, ?);
+            """;
+
     private static final String GET_ALL_SQL = """
             SELECT id,
                base_currency_id,
@@ -33,6 +38,25 @@ public class ExchangeRatesDao {
 
     public static ExchangeRatesDao getInstance(){
         return INSTANCE;
+    }
+
+    public ExchangeRate add(ExchangeRate exchangeRate){
+        try (Connection connection = ConnectionManager.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(ADD_SQL)) {
+            preparedStatement.setLong(1, exchangeRate.getBaseCurrencyId());
+            preparedStatement.setLong(2, exchangeRate.getTargetCurrencyId());
+            preparedStatement.setBigDecimal(3, exchangeRate.getRate());
+
+            preparedStatement.executeUpdate();
+
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()){
+                exchangeRate.setId(generatedKeys.getLong(1));
+            }
+            return exchangeRate;
+        } catch (SQLException e) {
+            throw new DatabaseException("Database error: Unable to add exchange rate");
+        }
     }
 
     public List<ExchangeRate> getAll(){

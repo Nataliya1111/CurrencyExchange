@@ -35,7 +35,7 @@ public class CurrenciesServlet extends HttpServlet {
         String name = req.getParameter("name");
         String sign = req.getParameter("sign");
 
-        if (code.isBlank() || code == null || name.isBlank() || name == null || sign.isBlank() || sign == null){
+        if (RequestValidator.isCurrencyParametersMissed(code, name, sign)){
             throw new InvalidRequestException("Missing required currency data");
         }
 
@@ -54,6 +54,7 @@ public class CurrenciesServlet extends HttpServlet {
 
         Currency addedCurrency = currencyDao.add(newCurrency);
 
+        resp.setStatus(HttpServletResponse.SC_CREATED);
         objectMapper.writeValue(resp.getWriter(), addedCurrency);
     }
 }

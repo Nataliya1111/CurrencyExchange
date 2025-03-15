@@ -1,5 +1,7 @@
 package com.nataliya1111.util;
 
+import java.math.BigDecimal;
+
 public class RequestValidator {
 
     private RequestValidator(){
@@ -17,6 +19,10 @@ public class RequestValidator {
         return sign.length() <= 3;
     }
 
+    public static boolean isCurrencyParametersMissed(String code, String name, String sign){
+        return code.isBlank() || code == null || name.isBlank() || name == null || sign.isBlank() || sign == null;
+    }
+
     public static boolean isCodesPairValid(String codesPair){
         return codesPair.matches("[A-Z]{6}");
     }
@@ -27,5 +33,12 @@ public class RequestValidator {
         return baseCurrencyCode.equals(targetCurrencyCode);
     }
 
+    public static boolean isExchangeRateParametersMissed(String baseCurrencyCode, String targetCurrencyCode, String rate){
+        return baseCurrencyCode.isBlank() || baseCurrencyCode == null || targetCurrencyCode.isBlank() || targetCurrencyCode == null || rate .isBlank() || rate  == null;
+    }
+
+    public static boolean isRateValid(String rate){
+        return rate.length() <= 10 && rate.matches("\\d+(\\.\\d+)?") && new BigDecimal(rate).compareTo(BigDecimal.ZERO) > 0;
+    }
 
 }

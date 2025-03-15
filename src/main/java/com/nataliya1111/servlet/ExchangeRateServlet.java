@@ -1,7 +1,7 @@
 package com.nataliya1111.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nataliya1111.dto.ExchangeRateDto;
+import com.nataliya1111.dto.ExchangeRateResponseDto;
 import com.nataliya1111.exception.InvalidRequestException;
 import com.nataliya1111.service.ExchangeRatesService;
 import com.nataliya1111.util.RequestValidator;
@@ -31,8 +31,8 @@ public class ExchangeRateServlet extends HttpServlet {
             throw new InvalidRequestException("Codes can't be equal");
         }
 
-        ExchangeRateDto exchangeRateDto = exchangeRatesService.getByCodes(codesPair);
+        ExchangeRateResponseDto exchangeRateResponseDto = exchangeRatesService.getByCodes(codesPair);
 
-        objectMapper.writeValue(resp.getWriter(), exchangeRateDto);
+        objectMapper.writeValue(resp.getWriter(), exchangeRateResponseDto);
     }
 }
