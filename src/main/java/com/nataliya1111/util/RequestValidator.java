@@ -34,7 +34,7 @@ public class RequestValidator {
     }
 
     public static boolean isExchangeRateParametersMissed(String baseCurrencyCode, String targetCurrencyCode, String rate){
-        return baseCurrencyCode.isBlank() || baseCurrencyCode == null || targetCurrencyCode.isBlank() || targetCurrencyCode == null || rate .isBlank() || rate  == null;
+        return  baseCurrencyCode == null || baseCurrencyCode.isBlank() || targetCurrencyCode == null || targetCurrencyCode.isBlank() || rate  == null || rate .isBlank();
     }
 
     public static boolean isRateValid(String rate){

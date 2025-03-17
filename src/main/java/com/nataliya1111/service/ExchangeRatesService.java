@@ -93,16 +93,27 @@ public class ExchangeRatesService {
         );
     }
 
-//    public boolean isExchangeRateExist(String baseCurrencyCode, String targetCurrencyCode) throws DataNotFoundException{
-//        Currency baseCurrency = currencyDao.getByCode(baseCurrencyCode)
-//                .orElseThrow(() -> new DataNotFoundException("One or two currencies do not exist in database"));   //404
-//        Currency targetCurrency = currencyDao.getByCode(targetCurrencyCode)
-//                .orElseThrow(() -> new DataNotFoundException("One or two currencies do not exist in database"));   //404
-//
-//        Optional<ExchangeRate> optionalExchangeRate = exchangeRatesDao.getByBaseAndTargetId(baseCurrency.getId(), targetCurrency.getId());
-//
-//        return optionalExchangeRate.isPresent();
-//    }
+    public ExchangeRateResponseDto updateExchangeRate(ExchangeRateRequestDto exchangeRateRequestDto){
+
+        Currency baseCurrency = currencyDao.getByCode(exchangeRateRequestDto.getBaseCurrencyCode())
+                .orElseThrow(() -> new InvalidRequestException("Invalid request: Currency is not found"));   //400
+        Currency targetCurrency = currencyDao.getByCode(exchangeRateRequestDto.getTargetCurrencyCode())
+                .orElseThrow(() -> new InvalidRequestException("Invalid request: Currency is not found"));   //400
+
+        Optional<ExchangeRate> optionalExchangeRate = exchangeRatesDao.getByBaseAndTargetId(baseCurrency.getId(), targetCurrency.getId());
+        ExchangeRate exchangeRate = optionalExchangeRate.orElseThrow(() -> new DataNotFoundException("Exchange rate with such currencies does not exist"));
+
+        exchangeRate.setRate(new BigDecimal(exchangeRateRequestDto.getRate()));
+
+        exchangeRatesDao.updateExchangeRate(exchangeRate);
+
+        return new ExchangeRateResponseDto(
+                exchangeRate.getId(),
+                baseCurrency,
+                targetCurrency,
+                exchangeRate.getRate()
+        );
+    }
 
     public static ExchangeRatesService getInstance(){
         return INSTANCE;

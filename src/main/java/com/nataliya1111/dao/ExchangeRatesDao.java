@@ -33,6 +33,12 @@ public class ExchangeRatesDao {
             WHERE base_currency_id = ? AND target_currency_id = ?
             """;
 
+    private static final String UPDATE_SQL = """
+            UPDATE ExchangeRates
+            SET rate = ?
+            WHERE base_currency_id = ? AND target_currency_id = ?
+            """;
+
     private ExchangeRatesDao(){
     }
 
@@ -89,6 +95,20 @@ public class ExchangeRatesDao {
             return Optional.ofNullable(exchangeRate);
         } catch (SQLException e) {
             throw new DatabaseException("Database error: Unable to read exchange rate");
+        }
+    }
+
+    public void updateExchangeRate(ExchangeRate exchangeRate){
+        try (Connection connection = ConnectionManager.get();
+        PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
+            preparedStatement.setBigDecimal(1, exchangeRate.getRate());
+            preparedStatement.setLong(2, exchangeRate.getBaseCurrencyId());
+            preparedStatement.setLong(3, exchangeRate.getTargetCurrencyId());
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Database error: Unable to update exchange rate");
         }
     }
 

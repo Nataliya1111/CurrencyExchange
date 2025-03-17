@@ -41,8 +41,6 @@ public class ExchangeRatesServlet extends HttpServlet {
         String targetCurrencyCode = req.getParameter("targetCurrencyCode");
         String rate = req.getParameter("rate");
 
-        ExchangeRateRequestDto exchangeRateRequestDto = new ExchangeRateRequestDto(baseCurrencyCode, targetCurrencyCode, rate);
-
         if (RequestValidator.isExchangeRateParametersMissed(baseCurrencyCode, targetCurrencyCode, rate)){
             throw new InvalidRequestException("Missing required currency data");
         }
@@ -50,6 +48,7 @@ public class ExchangeRatesServlet extends HttpServlet {
             throw new InvalidRequestException("Invalid exchange rate data. Base and target currency code: 3 uppercase Latin letters. Rate: positive number no longer than 10 characters, like '123.45' or '25'");
         }
 
+        ExchangeRateRequestDto exchangeRateRequestDto = new ExchangeRateRequestDto(baseCurrencyCode, targetCurrencyCode, rate);
         ExchangeRateResponseDto exchangeRateResponseDto = exchangeRatesService.add(exchangeRateRequestDto);
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
