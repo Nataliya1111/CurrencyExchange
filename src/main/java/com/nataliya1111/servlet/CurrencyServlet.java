@@ -6,7 +6,6 @@ import com.nataliya1111.entity.Currency;
 import com.nataliya1111.exception.DataNotFoundException;
 import com.nataliya1111.exception.InvalidRequestException;
 import com.nataliya1111.util.RequestValidator;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +22,7 @@ public class CurrencyServlet extends HttpServlet {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String currencyCode = req.getPathInfo().replaceFirst("/", "");
 
@@ -33,7 +32,7 @@ public class CurrencyServlet extends HttpServlet {
 
         Optional<Currency> currency = currencyDao.getByCode(currencyCode);
 
-        Currency searchedCurrency = null;
+        Currency searchedCurrency;
         try {
             searchedCurrency = currency.get();
         } catch (NoSuchElementException e) {

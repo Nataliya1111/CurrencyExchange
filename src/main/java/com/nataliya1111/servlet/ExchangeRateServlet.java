@@ -14,14 +14,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
 
-    private static ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private final ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -34,25 +32,15 @@ public class ExchangeRateServlet extends HttpServlet {
 
     private void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String codesPair = req.getPathInfo().replaceFirst("/", "");
-        BufferedReader reader = req.getReader();
-        String requestBody = reader.readLine();
-        String[] parameters = requestBody.split("&");
-        String newRate = null;
-        for (String parameter : parameters){
-            if (parameter.startsWith("rate=")){
-                newRate = parameter.substring(5);
-                break;
-            }
-        }
+        String newRate = getNewRate(req);
 
         if (newRate  == null || newRate.isBlank()){
             throw new InvalidRequestException("Missing rate data");   //400
         }
-
         if (!RequestValidator.isCodesPairValid(codesPair)) {   //400
             throw new InvalidRequestException("Invalid request. Expected two codes of 3 uppercase letters (example USDRUB)");
         }
-        if (RequestValidator.isCodesInPairEquals(codesPair)){   //400
+        if (RequestValidator.isCodesEqual(codesPair)){   //400
             throw new InvalidRequestException("Invalid request. Codes can't be equal");
         }
         if (!RequestValidator.isRateValid(newRate)){   //400
@@ -68,20 +56,34 @@ public class ExchangeRateServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String codesPair = req.getPathInfo().replaceFirst("/", "");
 
         if (!RequestValidator.isCodesPairValid(codesPair)) {   //400
             throw new InvalidRequestException("Invalid request. Expected two codes of 3 uppercase letters (example USDRUB)");
         }
-        if (RequestValidator.isCodesInPairEquals(codesPair)){   //400
+        if (RequestValidator.isCodesEqual(codesPair)){   //400
             throw new InvalidRequestException("Invalid request. Codes can't be equal");
         }
 
         ExchangeRateResponseDto exchangeRateResponseDto = exchangeRatesService.getByCodes(codesPair);
 
         objectMapper.writeValue(resp.getWriter(), exchangeRateResponseDto);
+    }
+
+    private static String getNewRate(HttpServletRequest req) throws IOException {
+        BufferedReader reader = req.getReader();
+        String requestBody = reader.readLine();
+        String[] parameters = requestBody.split("&");
+        String newRate = null;
+        for (String parameter : parameters){
+            if (parameter.startsWith("rate=")){
+                newRate = parameter.substring(5);
+                break;
+            }
+        }
+        return newRate;
     }
 
 

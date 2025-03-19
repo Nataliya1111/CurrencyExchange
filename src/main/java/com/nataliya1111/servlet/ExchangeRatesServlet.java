@@ -1,41 +1,34 @@
 package com.nataliya1111.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nataliya1111.dao.CurrencyDao;
 import com.nataliya1111.dto.ExchangeRateRequestDto;
 import com.nataliya1111.dto.ExchangeRateResponseDto;
-import com.nataliya1111.entity.Currency;
-import com.nataliya1111.entity.ExchangeRate;
-import com.nataliya1111.exception.DataExistsException;
 import com.nataliya1111.exception.InvalidRequestException;
 import com.nataliya1111.service.ExchangeRatesService;
 import com.nataliya1111.util.RequestValidator;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 @WebServlet("/exchangeRates")
 public class ExchangeRatesServlet extends HttpServlet {
 
-    private static ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
-    private static CurrencyDao currencyDao = CurrencyDao.getInstance();
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private final ExchangeRatesService exchangeRatesService = ExchangeRatesService.getInstance();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         List<ExchangeRateResponseDto> exchangeRatesList = exchangeRatesService.getAll();
         objectMapper.writeValue(resp.getWriter(), exchangeRatesList);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String baseCurrencyCode = req.getParameter("baseCurrencyCode");
         String targetCurrencyCode = req.getParameter("targetCurrencyCode");

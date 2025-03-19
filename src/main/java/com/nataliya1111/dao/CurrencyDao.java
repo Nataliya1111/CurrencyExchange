@@ -34,11 +34,6 @@ public class CurrencyDao {
             WHERE id = ?
             """;
 
-    private static final String DELETE_SQL = """
-            DELETE FROM Currencies
-            WHERE id = ?
-            """;
-
     private CurrencyDao() {
     }
 
@@ -112,16 +107,6 @@ public class CurrencyDao {
         }
 
     }
-//    public boolean delete(Long id){
-//        try (Connection connection = ConnectionManager.get();
-//             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
-//            preparedStatement.setLong(1, id);
-//            return preparedStatement.executeUpdate() > 0;
-//        } catch (SQLException e) {
-//            throw new DaoException("");
-//        }
-
-//    }
 
     private static Currency buildCurrency(ResultSet resultSet) throws SQLException {
         return new Currency(resultSet.getLong("id"),
@@ -130,5 +115,4 @@ public class CurrencyDao {
                 resultSet.getString("sign")
         );
     }
-
 }

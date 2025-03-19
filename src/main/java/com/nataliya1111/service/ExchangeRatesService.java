@@ -44,7 +44,7 @@ public class ExchangeRatesService {
         Optional<ExchangeRate> optionalExchangeRate = exchangeRatesDao.getByBaseAndTargetId(baseCurrency.getId(), targetCurrency.getId());
         if (optionalExchangeRate.isPresent()){
             throw new DataExistsException("Exchange rate with such currencies already exists");   //409
-        };
+        }
 
         ExchangeRate addedExchangeRate = exchangeRatesDao.add(newExchangeRate);
 

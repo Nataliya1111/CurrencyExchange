@@ -15,7 +15,7 @@ import java.util.Map;
 @WebFilter("/*")
 public class JsonErrorHandlingFilter implements Filter {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

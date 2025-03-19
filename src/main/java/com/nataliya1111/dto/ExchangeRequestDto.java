@@ -1,15 +1,17 @@
 package com.nataliya1111.dto;
 
-public class ExchangeRateRequestDto {
+import java.math.BigDecimal;
+
+public class ExchangeRequestDto {
 
     private final String baseCurrencyCode;
     private final String targetCurrencyCode;
-    private final String rate;
+    private final BigDecimal amount;
 
-    public ExchangeRateRequestDto(String baseCurrencyCode, String targetCurrencyCode, String rate) {
+    public ExchangeRequestDto(String baseCurrencyCode, String targetCurrencyCode, BigDecimal amount) {
         this.baseCurrencyCode = baseCurrencyCode;
         this.targetCurrencyCode = targetCurrencyCode;
-        this.rate = rate;
+        this.amount = amount;
     }
 
     public String getBaseCurrencyCode() {
@@ -20,8 +22,7 @@ public class ExchangeRateRequestDto {
         return targetCurrencyCode;
     }
 
-    public String getRate() {
-        return rate;
+    public BigDecimal getAmount() {
+        return amount;
     }
-
 }

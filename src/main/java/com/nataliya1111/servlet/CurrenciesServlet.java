@@ -6,7 +6,6 @@ import com.nataliya1111.entity.Currency;
 import com.nataliya1111.exception.DataExistsException;
 import com.nataliya1111.exception.InvalidRequestException;
 import com.nataliya1111.util.RequestValidator;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,18 +17,18 @@ import java.util.List;
 @WebServlet("/currencies")
 public class CurrenciesServlet extends HttpServlet {
 
-    private static CurrencyDao currencyDao = CurrencyDao.getInstance();
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private final CurrencyDao currencyDao = CurrencyDao.getInstance();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         List<Currency> currenciesList = currencyDao.getAll();
         objectMapper.writeValue(resp.getWriter(), currenciesList);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         String code = req.getParameter("code");
         String name = req.getParameter("name");
