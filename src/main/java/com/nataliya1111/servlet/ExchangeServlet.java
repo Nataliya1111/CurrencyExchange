@@ -27,7 +27,7 @@ public class ExchangeServlet extends HttpServlet {
         String amount = req.getParameter("amount");
 
         if (RequestValidator.isExchangeParametersMissed(baseCurrencyCode, targetCurrencyCode, amount)){
-            throw new InvalidRequestException("Missing required data: 'Base currency code', 'Target currency code', and 'Amount' parameters are required");
+            throw new InvalidRequestException("Missing required data: 'Base currency', 'Target currency', and 'Amount' parameters are required");
         }
 
         if (!RequestValidator.isCurrencyCodeValid(baseCurrencyCode) || !RequestValidator.isCurrencyCodeValid(targetCurrencyCode)){

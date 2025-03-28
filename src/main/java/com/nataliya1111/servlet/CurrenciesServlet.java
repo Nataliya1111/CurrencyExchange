@@ -48,7 +48,7 @@ public class CurrenciesServlet extends HttpServlet {
 
         Currency newCurrency = new Currency();
         newCurrency.setCode(code);
-        newCurrency.setFullName(name);
+        newCurrency.setName(name);
         newCurrency.setSign(sign);
 
         Currency addedCurrency = currencyDao.add(newCurrency);

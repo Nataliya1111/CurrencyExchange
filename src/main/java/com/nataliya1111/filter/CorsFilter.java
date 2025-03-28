@@ -8,7 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebFilter("/*")
+@WebFilter(value = {
+        "/currencies", "/currency/*", "/exchangeRates", "/exchangeRate/*", "/exchange"
+})
 public class CorsFilter extends HttpFilter {
 
     @Override
